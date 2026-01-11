@@ -13,7 +13,7 @@ export const PROJECTS: Project[] = [
     color: "#ff0055", // Neon Pink
     description: "An in-browser generative audio model that explores the sonic void. Particles become turbulent and chaotic here.",
     techStack: ["TensorFlow.js", "WebAudio API", "React", "GLSL"],
-    link: "https://github.com/example/latent-noise"
+    link: "https://seutje.github.io/latent-noise"
   },
   {
     id: "neuromorphs",
@@ -22,7 +22,7 @@ export const PROJECTS: Project[] = [
     color: "#00ff88", // Neon Green
     description: "Spiking Neural Network simulation visualizing synaptic plasticity. Particles snap to a structured grid.",
     techStack: ["Python", "CUDA", "D3.js", "WebSockets"],
-    link: "https://github.com/example/neuromorphs"
+    link: "https://seutje.github.io/neuromorphs"
   },
   {
     id: "wow-legends",
@@ -31,6 +31,6 @@ export const PROJECTS: Project[] = [
     color: "#ffcc00", // Gold
     description: "Procedural lore generation trained on fantasy corpuses. Particles move sluggishly and clump like terrain.",
     techStack: ["GPT-3", "Next.js", "PostgreSQL", "Three.js"],
-    link: "https://github.com/example/wow-legends"
+    link: "https://seutje.github.io/wow-legends"
   }
 ];
