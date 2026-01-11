@@ -16,8 +16,8 @@ export const PROJECTS: Project[] = [
     title: "LatentNoise",
     position: [0, 8, -5], // High and deep
     color: "#ff0055", // Neon Pink
-    description: "An in-browser generative audio model that explores the sonic void. Particles become turbulent and chaotic here.",
-    techStack: ["TensorFlow.js", "WebAudio API", "React", "GLSL"],
+    description: "Audio visualizer driven by a neural network that can be retrained in the browser. Particles become turbulent and chaotic here.",
+    techStack: ["JavaScript", "WebAudio API", "GLSL", "ffmpeg"],
     link: "https://seutje.github.io/latent-noise"
   },
   {
@@ -25,8 +25,8 @@ export const PROJECTS: Project[] = [
     title: "Neuromorphs",
     position: [-8, -5, 5], // Left, low, foreground
     color: "#00ff88", // Neon Green
-    description: "Spiking Neural Network simulation visualizing synaptic plasticity. Particles snap to a structured grid.",
-    techStack: ["Python", "CUDA", "D3.js", "WebSockets"],
+    description: "Teaching a neural network to walk through selective mutation. Particles snap to a structured grid.",
+    techStack: ["JavaScript", "Three.js", "Rapier", "WebWorkers"],
     link: "https://seutje.github.io/neuromorphs"
   },
   {
@@ -34,8 +34,8 @@ export const PROJECTS: Project[] = [
     title: "WoW Legends",
     position: [8, 0, 0], // Right, mid, center depth
     color: "#ffcc00", // Gold
-    description: "Procedural lore generation trained on fantasy corpuses. Particles move sluggishly and clump like terrain.",
-    techStack: ["GPT-3", "Next.js", "PostgreSQL", "Three.js"],
+    description: "Trading card game with AI opponent driven by a neural network trained against itself. Particles move sluggishly and clump like terrain.",
+    techStack: ["JavaScript", "AlphaZero", "MCTS", "Imagen"],
     link: "https://seutje.github.io/wow-legends"
   }
 ];
