@@ -23,13 +23,13 @@ const HUD: React.FC = () => {
         </div>
         
         <div className="flex gap-4 pointer-events-auto">
-          <button onClick={toggleLowPower} className={`text-xs font-mono border px-3 py-1 hover:bg-white hover:text-black transition ${isLowPower ? 'bg-white text-black' : 'border-gray-700 text-gray-400'}`}>
+          <button onClick={toggleLowPower} className={`text-xs font-mono border px-3 py-1 bg-black hover:bg-white hover:text-black transition ${isLowPower ? 'bg-white text-black' : 'border-gray-700 text-gray-400'}`}>
             {isLowPower ? 'LOW POWER: ON' : 'HIGH PERF'}
           </button>
-          <a href="#" className="text-xs font-mono border border-gray-700 text-gray-400 px-3 py-1 hover:bg-white hover:text-black transition">
+          <a href="#" className="text-xs font-mono border border-gray-700 text-gray-400 px-3 py-1 bg-black hover:bg-white hover:text-black transition">
             DOWNLOAD CV
           </a>
-          <a href="#" className="text-xs font-mono border border-gray-700 text-gray-400 px-3 py-1 hover:bg-white hover:text-black transition">
+          <a href="#" className="text-xs font-mono border border-gray-700 text-gray-400 px-3 py-1 bg-black hover:bg-white hover:text-black transition">
             CONTACT
           </a>
         </div>
