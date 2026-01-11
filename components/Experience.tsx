@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { easing } from 'maath';
@@ -7,6 +7,9 @@ import ParticleSystem from './ParticleSystem';
 import { useStore } from '../store';
 import { DEFAULT_CAMERA_Z, PROJECTS } from '../constants';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 interface CameraRigProps {
   controlsRef: React.RefObject<OrbitControlsImpl>;
@@ -79,6 +82,55 @@ const Background = () => {
     )
 }
 
+const SubtleBloom = () => {
+  const { gl, scene, camera, size } = useThree();
+
+  const { composer, bloomPass } = useMemo(() => {
+    const effectComposer = new EffectComposer(gl);
+    effectComposer.addPass(new RenderPass(scene, camera));
+
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(size.width, size.height),
+      0.25,
+      0.6,
+      0.85
+    );
+    bloom.threshold = 0.1;
+    bloom.strength = 0.3;
+    bloom.radius = 0.6;
+    effectComposer.addPass(bloom);
+
+    return { composer: effectComposer, bloomPass: bloom };
+  }, [gl, scene, camera]);
+
+  useEffect(() => {
+    const prevAutoClear = gl.autoClear;
+    gl.autoClear = false;
+    return () => {
+      gl.autoClear = prevAutoClear;
+    };
+  }, [gl]);
+
+  useEffect(() => {
+    composer.setSize(size.width, size.height);
+    if (bloomPass.setSize) {
+      bloomPass.setSize(size.width, size.height);
+    }
+  }, [composer, bloomPass, size]);
+
+  useEffect(() => {
+    return () => {
+      composer.dispose();
+    };
+  }, [composer]);
+
+  useFrame(() => {
+    composer.render();
+  }, 1);
+
+  return null;
+};
+
 const Experience: React.FC = () => {
   const isLowPower = useStore(state => state.isLowPower);
   const setCameraTarget = useStore(state => state.setCameraTarget);
@@ -115,6 +167,7 @@ const Experience: React.FC = () => {
                 setCameraTarget(position ?? new THREE.Vector3(0, 0, DEFAULT_CAMERA_Z));
               }}
             />
+            <SubtleBloom />
           </>
       ) : (
           /* Low Power Fallback - Static Scene */
@@ -129,7 +182,6 @@ const Experience: React.FC = () => {
           </group>
       )}
       
-      {/* Post-processing could go here (Bloom), but omitted for performance/simplicity */}
     </Canvas>
   );
 };
