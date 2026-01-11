@@ -35,11 +35,6 @@ const HUD: React.FC = () => {
         </div>
       </div>
 
-      {/* Center - only visible initially */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none opacity-40">
-        <p className="text-xs font-mono tracking-[0.3em] text-white">DRAG TO NAVIGATE</p>
-      </div>
-
       {/* Bottom Footer */}
       <div className="flex justify-between items-end">
         {/* Coordinates */}

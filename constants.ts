@@ -16,7 +16,7 @@ export const PROJECTS: Project[] = [
     title: "LatentNoise",
     position: [0, 8, -5], // High and deep
     color: "#ff0055", // Neon Pink
-    description: "Audio visualizer driven by a neural network that can be retrained in the browser. Particles become turbulent and chaotic here.",
+    description: "Browser-based audio‑reactive physics visualizer built with vanilla HTML/CSS/JS that uses the Web Audio API to extract real‑time spectral features, feeds them through compact neural‑network models, and maps the outputs into a particle‑physics simulation rendered on canvas with adaptive performance controls and photosensitivity‑safe clamps, wrapped in a full UI/UX layer (playlist, HUD, keyboard controls, persistence) and supported by linting/testing and model‑generation tooling—demonstrating end‑to‑end front‑end engineering, signal processing, and interactive graphics design in a single ES‑module app.",
     techStack: ["JavaScript", "WebAudio API", "GLSL", "ffmpeg"],
     link: "https://seutje.github.io/latent-noise"
   },
@@ -25,7 +25,7 @@ export const PROJECTS: Project[] = [
     title: "Neuromorphs",
     position: [-8, -5, 5], // Left, low, foreground
     color: "#00ff88", // Neon Green
-    description: "Teaching a neural network to walk through selective mutation. Particles snap to a structured grid.",
+    description: "Browser-based evolutionary simulation that uses a genetic algorithm to evolve 3D block creatures with recurrent neural-network controllers, integrating Rapier3D physics and Three.js rendering in a React/Vite TypeScript app; delivered real-time simulation controls (seeds, population, epoch, environments), interactive morphology/brain editors, and visual analytics (fitness history, connectivity, morphology) to explore locomotion performance across generations.",
     techStack: ["JavaScript", "Three.js", "Rapier", "WebWorkers"],
     link: "https://seutje.github.io/neuromorphs"
   },
@@ -34,7 +34,7 @@ export const PROJECTS: Project[] = [
     title: "WoW Legends",
     position: [8, 0, 0], // Right, mid, center depth
     color: "#ffcc00", // Gold
-    description: "Trading card game with AI opponent driven by a neural network trained against itself. Particles move sluggishly and clump like terrain.",
+    description: "Browser-based RPG trading card game prototype inspired by WoW, implementing modular ES‑module architecture (entities, systems, UI) with a playable skirmish mode, deckbuilding, combat/keyword systems, progression hooks, and a lightweight live‑reload workflow. Developed AI opponents spanning heuristics, MCTS, and neural models with supporting training/evaluation tooling, plus data-driven card definitions and content ingestion pipelines. Integrated Jest-based tests and modern tooling while keeping gameplay orchestration centralized in a clean game loop and browser entry point.",
     techStack: ["JavaScript", "AlphaZero", "MCTS", "Imagen"],
     link: "https://seutje.github.io/wow-legends"
   }
