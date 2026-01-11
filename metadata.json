@@ -1,0 +1,5 @@
+{
+  "name": "The Latent Atlas",
+  "description": "An interactive 3D portfolio featuring a GPGPU particle system, spatial navigation, and shader-based visuals.",
+  "requestFramePermissions": []
+}
