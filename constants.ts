@@ -7,6 +7,10 @@ export const TEXTURE_SIZE = 2048;
 export const DEFAULT_CAMERA_DISTANCE = 18;
 export const DEFAULT_CAMERA_SCROLL_STEPS = 10;
 export const CONNECTION_RADIUS = 15.0;
+export const PROJECT_DRIFT = {
+  amplitude: [0.9, 0.7, 0.6] as const,
+  speed: 0.30,
+};
 // OrbitControls uses 0.95^zoomSpeed per wheel tick; invert to mimic scroll-down zoom-out.
 export const DEFAULT_CAMERA_Z =
   DEFAULT_CAMERA_DISTANCE * Math.pow(1 / 0.95, DEFAULT_CAMERA_SCROLL_STEPS);
@@ -40,3 +44,17 @@ export const PROJECTS: Project[] = [
     link: "https://seutje.github.io/wow-legends"
   }
 ];
+
+export const getProjectDriftedPosition = (
+  position: [number, number, number],
+  time: number,
+  seed: number
+): [number, number, number] => {
+  const phase = seed * 1.7;
+  const t = time * PROJECT_DRIFT.speed;
+  return [
+    position[0] + Math.sin(t + phase) * PROJECT_DRIFT.amplitude[0],
+    position[1] + Math.cos(t * 0.9 + phase * 1.3) * PROJECT_DRIFT.amplitude[1],
+    position[2] + Math.sin(t * 1.1 + phase * 2.1) * PROJECT_DRIFT.amplitude[2],
+  ];
+};

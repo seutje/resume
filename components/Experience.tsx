@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { easing } from 'maath';
 import ParticleSystem from './ParticleSystem';
 import { useStore } from '../store';
-import { DEFAULT_CAMERA_Z, PROJECTS } from '../constants';
+import { DEFAULT_CAMERA_Z, PROJECTS, getProjectDriftedPosition } from '../constants';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -20,24 +20,41 @@ const CameraRig: React.FC<CameraRigProps> = ({ controlsRef, isUserInteracting })
   const { cameraTarget, activeProjectId, setHoveredCoordinates } = useStore();
   const focusTarget = useRef(new THREE.Vector3());
   const defaultTarget = useRef(new THREE.Vector3(0, 0, 0));
+  const cameraFollowTarget = useRef(new THREE.Vector3());
 
   // Retrieve active project data for 3D lookAt target
-  const activeProject = PROJECTS.find(p => p.id === activeProjectId);
+  const activeProjectIndex = useMemo(
+    () => PROJECTS.findIndex(p => p.id === activeProjectId),
+    [activeProjectId]
+  );
 
   useFrame((state, delta) => {
+    const t = state.clock.elapsedTime;
+    const hasActiveProject = activeProjectIndex >= 0;
+    const driftedActivePosition = hasActiveProject
+      ? getProjectDriftedPosition(PROJECTS[activeProjectIndex].position, t, activeProjectIndex)
+      : null;
+
     // Smooth camera movement to target
     if (!isUserInteracting.current) {
-      easing.damp3(state.camera.position, cameraTarget, 0.4, delta);
+      const target = hasActiveProject
+        ? cameraFollowTarget.current.set(
+            driftedActivePosition![0],
+            driftedActivePosition![1],
+            driftedActivePosition![2] + 8
+          )
+        : cameraTarget;
+      easing.damp3(state.camera.position, target, 0.4, delta);
     }
     
     // Update orbit target for rotations around the right focus point.
     const controls = controlsRef.current;
     if (controls) {
-      if (activeProject) {
+      if (hasActiveProject) {
         focusTarget.current.set(
-          activeProject.position[0],
-          activeProject.position[1],
-          activeProject.position[2]
+          driftedActivePosition![0],
+          driftedActivePosition![1],
+          driftedActivePosition![2]
         );
       } else {
         focusTarget.current.copy(defaultTarget.current);
@@ -54,15 +71,29 @@ const CameraRig: React.FC<CameraRigProps> = ({ controlsRef, isUserInteracting })
 };
 
 const ProjectMarkers = () => {
-    const { setActiveProject, activeProjectId } = useStore();
+    const { setActiveProject } = useStore();
+    const markerRefs = useRef<THREE.Mesh[]>([]);
+
+    useFrame(({ clock }) => {
+      const t = clock.elapsedTime;
+      for (let i = 0; i < PROJECTS.length; i++) {
+        const marker = markerRefs.current[i];
+        if (!marker) continue;
+        const drifted = getProjectDriftedPosition(PROJECTS[i].position, t, i);
+        marker.position.set(drifted[0], drifted[1], drifted[2]);
+      }
+    });
     
     return (
         <group>
-            {PROJECTS.map((project) => (
+            {PROJECTS.map((project, index) => (
                 <mesh 
                     key={project.id} 
                     position={project.position} 
                     onClick={() => setActiveProject(project.id)}
+                    ref={(node) => {
+                      if (node) markerRefs.current[index] = node;
+                    }}
                     visible={false} // Invisible hitboxes
                 >
                     <sphereGeometry args={[3, 16, 16]} />

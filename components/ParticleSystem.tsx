@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { SimulationMaterial } from '../shaders/simulationMaterial';
 import { particleVertexShader, particleFragmentShader } from '../shaders/particleMaterial';
 import { connectionVertexShader, connectionFragmentShader } from '../shaders/connectionMaterial';
-import { PARTICLE_COUNT, TEXTURE_SIZE, PROJECTS, CONNECTION_RADIUS } from '../constants';
+import { PARTICLE_COUNT, TEXTURE_SIZE, PROJECTS, CONNECTION_RADIUS, getProjectDriftedPosition } from '../constants';
 import { useStore } from '../store';
 
 const generatePositions = (width: number, height: number) => {
@@ -195,9 +195,16 @@ const ParticleSystem: React.FC = () => {
   useFrame((state) => {
     const { clock } = state;
     const { current, next } = fboRef.current;
+    const t = clock.elapsedTime;
+    const drift1 = getProjectDriftedPosition(PROJECTS[0].position, t, 0);
+    const drift2 = getProjectDriftedPosition(PROJECTS[1].position, t, 1);
+    const drift3 = getProjectDriftedPosition(PROJECTS[2].position, t, 2);
     
     // A. Update Sim Uniforms
-    simMaterial.uniforms.uTime.value = clock.elapsedTime;
+    simMaterial.uniforms.uTime.value = t;
+    simMaterial.uniforms.uTarget1.value.set(...drift1);
+    simMaterial.uniforms.uTarget2.value.set(...drift2);
+    simMaterial.uniforms.uTarget3.value.set(...drift3);
     
     // Project mouse to a plane (Z=0 is the default reference plane)
     const vec = new THREE.Vector3(pointer.x, pointer.y, 0.5);
@@ -217,10 +224,18 @@ const ParticleSystem: React.FC = () => {
 
     // C. Update Visuals
     if (pointsRef.current) {
-        (pointsRef.current.material as THREE.ShaderMaterial).uniforms.uPositions.value = next.texture;
+        const material = pointsRef.current.material as THREE.ShaderMaterial;
+        material.uniforms.uPositions.value = next.texture;
+        material.uniforms.uTarget1.value.set(...drift1);
+        material.uniforms.uTarget2.value.set(...drift2);
+        material.uniforms.uTarget3.value.set(...drift3);
     }
     if (linesRef.current) {
-        (linesRef.current.material as THREE.ShaderMaterial).uniforms.uPositions.value = next.texture;
+        const material = linesRef.current.material as THREE.ShaderMaterial;
+        material.uniforms.uPositions.value = next.texture;
+        material.uniforms.uTarget1.value.set(...drift1);
+        material.uniforms.uTarget2.value.set(...drift2);
+        material.uniforms.uTarget3.value.set(...drift3);
     }
 
     // D. Swap
