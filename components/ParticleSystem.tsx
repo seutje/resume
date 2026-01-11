@@ -4,6 +4,7 @@ import { useFBO } from '@react-three/drei';
 import * as THREE from 'three';
 import { SimulationMaterial } from '../shaders/simulationMaterial';
 import { particleVertexShader, particleFragmentShader } from '../shaders/particleMaterial';
+import { connectionVertexShader, connectionFragmentShader } from '../shaders/connectionMaterial';
 import { PARTICLE_COUNT, TEXTURE_SIZE, PROJECTS } from '../constants';
 import { useStore } from '../store';
 
@@ -26,6 +27,7 @@ const generatePositions = (width: number, height: number) => {
 const ParticleSystem: React.FC = () => {
   const { gl, camera, pointer } = useThree();
   const pointsRef = useRef<THREE.Points>(null);
+  const linesRef = useRef<THREE.LineSegments>(null);
   const activeProjectId = useStore(state => state.activeProjectId);
 
   // 1. FBOs (Ping-Pong Buffers)
@@ -104,6 +106,21 @@ const ParticleSystem: React.FC = () => {
     });
   }, [initialTexture]);
 
+  const connectionMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      vertexShader: connectionVertexShader,
+      fragmentShader: connectionFragmentShader,
+      uniforms: {
+        uPositions: { value: initialTexture },
+        uColor: { value: new THREE.Color('#7c8794') },
+        uOpacity: { value: 0.2 },
+      },
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+  }, [initialTexture]);
+
   // 5. Geometry
   const particlesGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
@@ -116,6 +133,46 @@ const ParticleSystem: React.FC = () => {
         vertices[i3 + 1] = y / PARTICLE_COUNT;
         vertices[i3 + 2] = 0;
     }
+    geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    return geo;
+  }, []);
+
+  const connectionsGeometry = useMemo(() => {
+    const total = PARTICLE_COUNT * PARTICLE_COUNT;
+    const connectionRatio = 0.001;
+    const connectionSpread = 10;
+    const connectionCount = Math.floor(total * connectionRatio);
+    const vertices = new Float32Array(connectionCount * 2 * 3);
+
+    const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+    const toUv = (index: number) => {
+      const x = index % PARTICLE_COUNT;
+      const y = Math.floor(index / PARTICLE_COUNT);
+      return [(x + 0.5) / PARTICLE_COUNT, (y + 0.5) / PARTICLE_COUNT];
+    };
+
+    for (let i = 0; i < connectionCount; i++) {
+      const baseIndex = Math.floor(Math.random() * total);
+      const baseX = baseIndex % PARTICLE_COUNT;
+      const baseY = Math.floor(baseIndex / PARTICLE_COUNT);
+      const offsetX = Math.floor((Math.random() - 0.5) * connectionSpread);
+      const offsetY = Math.floor((Math.random() - 0.5) * connectionSpread);
+      const neighborX = clamp(baseX + offsetX, 0, PARTICLE_COUNT - 1);
+      const neighborY = clamp(baseY + offsetY, 0, PARTICLE_COUNT - 1);
+      const neighborIndex = neighborY * PARTICLE_COUNT + neighborX;
+
+      const [u1, v1] = toUv(baseIndex);
+      const [u2, v2] = toUv(neighborIndex);
+      const i6 = i * 6;
+      vertices[i6] = u1;
+      vertices[i6 + 1] = v1;
+      vertices[i6 + 2] = 0;
+      vertices[i6 + 3] = u2;
+      vertices[i6 + 4] = v2;
+      vertices[i6 + 5] = 0;
+    }
+
+    const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     return geo;
   }, []);
@@ -147,6 +204,9 @@ const ParticleSystem: React.FC = () => {
     if (pointsRef.current) {
         (pointsRef.current.material as THREE.ShaderMaterial).uniforms.uPositions.value = next.texture;
     }
+    if (linesRef.current) {
+        (linesRef.current.material as THREE.ShaderMaterial).uniforms.uPositions.value = next.texture;
+    }
 
     // D. Swap
     simMaterial.uniforms.positions.value = next.texture;
@@ -155,12 +215,20 @@ const ParticleSystem: React.FC = () => {
   });
 
   return (
+    <>
       <points
         ref={pointsRef}
         geometry={particlesGeometry}
         material={renderMaterial}
         frustumCulled={false}
       />
+      <lineSegments
+        ref={linesRef}
+        geometry={connectionsGeometry}
+        material={connectionMaterial}
+        frustumCulled={false}
+      />
+    </>
   );
 };
 
