@@ -24,7 +24,7 @@ const CameraRig = () => {
       easing.damp3(
         state.camera.rotation,
         [
-            -pointer.y * 0.1, // Pitch
+            pointer.y * 0.1, // Pitch
             -pointer.x * 0.1, // Yaw
             0
         ],
