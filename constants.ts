@@ -2,8 +2,8 @@ import { Project } from './types';
 import * as THREE from 'three';
 
 export const ATTRACTION_RADIUS = 10.0; // Increased radius for 3D volume
-export const PARTICLE_COUNT = 512; // Squared -> 512x512 = 262144 particles
-export const TEXTURE_SIZE = 512;
+export const PARTICLE_COUNT = 2048; // Squared -> 2048x2048 = 4194304 particles
+export const TEXTURE_SIZE = 2048;
 
 export const PROJECTS: Project[] = [
   {
