@@ -155,7 +155,12 @@ const ParticleSystem: React.FC = () => {
   });
 
   return (
-      <points ref={pointsRef} geometry={particlesGeometry} material={renderMaterial} />
+      <points
+        ref={pointsRef}
+        geometry={particlesGeometry}
+        material={renderMaterial}
+        frustumCulled={false}
+      />
   );
 };
 
