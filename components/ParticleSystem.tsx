@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { SimulationMaterial } from '../shaders/simulationMaterial';
 import { particleVertexShader, particleFragmentShader } from '../shaders/particleMaterial';
 import { connectionVertexShader, connectionFragmentShader } from '../shaders/connectionMaterial';
-import { PARTICLE_COUNT, TEXTURE_SIZE, PROJECTS } from '../constants';
+import { PARTICLE_COUNT, TEXTURE_SIZE, PROJECTS, CONNECTION_RADIUS } from '../constants';
 import { useStore } from '../store';
 
 const generatePositions = (width: number, height: number) => {
@@ -107,6 +107,10 @@ const ParticleSystem: React.FC = () => {
   }, [initialTexture]);
 
   const connectionMaterial = useMemo(() => {
+    const t1 = PROJECTS.find(p => p.id === 'latent-noise');
+    const t2 = PROJECTS.find(p => p.id === 'neuromorphs');
+    const t3 = PROJECTS.find(p => p.id === 'wow-legends');
+
     return new THREE.ShaderMaterial({
       vertexShader: connectionVertexShader,
       fragmentShader: connectionFragmentShader,
@@ -114,6 +118,10 @@ const ParticleSystem: React.FC = () => {
         uPositions: { value: initialTexture },
         uColor: { value: new THREE.Color('#7c8794') },
         uOpacity: { value: 0.2 },
+        uTarget1: { value: new THREE.Vector3(...(t1?.position || [0,0,0])) },
+        uTarget2: { value: new THREE.Vector3(...(t2?.position || [0,0,0])) },
+        uTarget3: { value: new THREE.Vector3(...(t3?.position || [0,0,0])) },
+        uConnectionRadius: { value: CONNECTION_RADIUS },
       },
       transparent: true,
       depthWrite: false,
@@ -143,6 +151,7 @@ const ParticleSystem: React.FC = () => {
     const connectionSpread = 10;
     const connectionCount = Math.floor(total * connectionRatio);
     const vertices = new Float32Array(connectionCount * 2 * 3);
+    const other = new Float32Array(connectionCount * 2 * 2);
 
     const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
     const toUv = (index: number) => {
@@ -164,16 +173,22 @@ const ParticleSystem: React.FC = () => {
       const [u1, v1] = toUv(baseIndex);
       const [u2, v2] = toUv(neighborIndex);
       const i6 = i * 6;
+      const i4 = i * 4;
       vertices[i6] = u1;
       vertices[i6 + 1] = v1;
       vertices[i6 + 2] = 0;
       vertices[i6 + 3] = u2;
       vertices[i6 + 4] = v2;
       vertices[i6 + 5] = 0;
+      other[i4] = u2;
+      other[i4 + 1] = v2;
+      other[i4 + 2] = u1;
+      other[i4 + 3] = v1;
     }
 
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geo.setAttribute('aOther', new THREE.BufferAttribute(other, 2));
     return geo;
   }, []);
 
