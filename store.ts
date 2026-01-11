@@ -7,6 +7,7 @@ interface AppState {
   cameraTarget: THREE.Vector3;
   hoveredCoordinates: { x: number; y: number };
   setActiveProject: (id: string | null) => void;
+  setCameraTarget: (position: THREE.Vector3) => void;
   setHoveredCoordinates: (x: number, y: number) => void;
   isLowPower: boolean;
   toggleLowPower: () => void;
@@ -40,6 +41,8 @@ export const useStore = create<AppState>((set) => ({
     }
     return state;
   }),
+
+  setCameraTarget: (position) => set({ cameraTarget: position.clone() }),
 
   setHoveredCoordinates: (x, y) => set({ hoveredCoordinates: { x, y } }),
   

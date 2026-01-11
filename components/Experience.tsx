@@ -1,48 +1,50 @@
 import React, { useRef } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { easing } from 'maath';
 import ParticleSystem from './ParticleSystem';
 import { useStore } from '../store';
 import { PROJECTS } from '../constants';
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
-const CameraRig = () => {
-  const { camera, pointer } = useThree();
+interface CameraRigProps {
+  controlsRef: React.RefObject<OrbitControlsImpl>;
+  isUserInteracting: React.RefObject<boolean>;
+}
+
+const CameraRig: React.FC<CameraRigProps> = ({ controlsRef, isUserInteracting }) => {
   const { cameraTarget, activeProjectId, setHoveredCoordinates } = useStore();
-  const vec = new THREE.Vector3();
+  const focusTarget = useRef(new THREE.Vector3());
+  const defaultTarget = useRef(new THREE.Vector3(0, 0, 0));
 
   // Retrieve active project data for 3D lookAt target
   const activeProject = PROJECTS.find(p => p.id === activeProjectId);
 
   useFrame((state, delta) => {
     // Smooth camera movement to target
-    easing.damp3(state.camera.position, cameraTarget, 0.4, delta);
-    
-    if (!activeProjectId) {
-      // Idle Mode: Slight rotation based on mouse
-      easing.damp3(
-        state.camera.rotation,
-        [
-            pointer.y * 0.1, // Pitch
-            -pointer.x * 0.1, // Yaw
-            0
-        ],
-        0.5,
-        delta
-      );
-      
-      // Update coordinates display (approximate)
-      setHoveredCoordinates(state.camera.position.x, state.camera.position.y);
-    } else if (activeProject) {
-        // Active Mode: Look smoothly at the project's actual 3D position
-        easing.dampLookAt(
-            state.camera, 
-            activeProject.position, 
-            0.4, 
-            delta
-        );
+    if (!isUserInteracting.current) {
+      easing.damp3(state.camera.position, cameraTarget, 0.4, delta);
     }
+    
+    // Update orbit target for rotations around the right focus point.
+    const controls = controlsRef.current;
+    if (controls) {
+      if (activeProject) {
+        focusTarget.current.set(
+          activeProject.position[0],
+          activeProject.position[1],
+          activeProject.position[2]
+        );
+      } else {
+        focusTarget.current.copy(defaultTarget.current);
+      }
+      easing.damp3(controls.target, focusTarget.current, 0.4, delta);
+      controls.update();
+    }
+
+    // Update coordinates display (approximate)
+    setHoveredCoordinates(state.camera.position.x, state.camera.position.y);
   });
 
   return null;
@@ -79,6 +81,9 @@ const Background = () => {
 
 const Experience: React.FC = () => {
   const isLowPower = useStore(state => state.isLowPower);
+  const setCameraTarget = useStore(state => state.setCameraTarget);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const isUserInteracting = useRef(false);
 
   return (
     <Canvas
@@ -92,8 +97,24 @@ const Experience: React.FC = () => {
           <>
             <ParticleSystem />
             <ProjectMarkers />
-            <CameraRig />
+            <CameraRig controlsRef={controlsRef} isUserInteracting={isUserInteracting} />
             <Background />
+            <OrbitControls
+              ref={controlsRef}
+              enableZoom
+              enableRotate
+              enablePan={false}
+              enableDamping
+              dampingFactor={0.1}
+              onStart={() => {
+                isUserInteracting.current = true;
+              }}
+              onEnd={() => {
+                isUserInteracting.current = false;
+                const position = controlsRef.current?.object.position;
+                setCameraTarget(position ?? new THREE.Vector3(0, 0, 18));
+              }}
+            />
           </>
       ) : (
           /* Low Power Fallback - Static Scene */
@@ -104,7 +125,7 @@ const Experience: React.FC = () => {
                      <meshBasicMaterial color={p.color} />
                  </mesh>
              ))}
-             <OrbitControls enableZoom={false} autoRotate speed={0.5} />
+             <OrbitControls enableZoom enableRotate enablePan={false} />
           </group>
       )}
       
