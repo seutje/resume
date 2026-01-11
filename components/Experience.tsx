@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { easing } from 'maath';
 import ParticleSystem from './ParticleSystem';
 import { useStore } from '../store';
-import { PROJECTS } from '../constants';
+import { DEFAULT_CAMERA_Z, PROJECTS } from '../constants';
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
 interface CameraRigProps {
@@ -88,7 +88,7 @@ const Experience: React.FC = () => {
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ position: [0, 0, 18], fov: 45 }}
+      camera={{ position: [0, 0, DEFAULT_CAMERA_Z], fov: 45 }}
       gl={{ antialias: false, alpha: false }}
     >
       <color attach="background" args={["#050505"]} />
@@ -112,7 +112,7 @@ const Experience: React.FC = () => {
               onEnd={() => {
                 isUserInteracting.current = false;
                 const position = controlsRef.current?.object.position;
-                setCameraTarget(position ?? new THREE.Vector3(0, 0, 18));
+                setCameraTarget(position ?? new THREE.Vector3(0, 0, DEFAULT_CAMERA_Z));
               }}
             />
           </>

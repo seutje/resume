@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as THREE from 'three';
-import { PROJECTS } from './constants';
+import { DEFAULT_CAMERA_Z, PROJECTS } from './constants';
 
 interface AppState {
   activeProjectId: string | null;
@@ -16,8 +16,8 @@ interface AppState {
 
 export const useStore = create<AppState>((set) => ({
   activeProjectId: null,
-  cameraTarget: new THREE.Vector3(0, 0, 18), // Pulled back further for 3D view
-  lastFreeCameraTarget: new THREE.Vector3(0, 0, 18),
+  cameraTarget: new THREE.Vector3(0, 0, DEFAULT_CAMERA_Z),
+  lastFreeCameraTarget: new THREE.Vector3(0, 0, DEFAULT_CAMERA_Z),
   hoveredCoordinates: { x: 0, y: 0 },
   isLowPower: false,
   

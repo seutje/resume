@@ -1,9 +1,14 @@
 import { Project } from './types';
 import * as THREE from 'three';
 
-export const ATTRACTION_RADIUS = 20.0; // Increased radius for 3D volume
+export const ATTRACTION_RADIUS = 50.0; // Increased radius for 3D volume
 export const PARTICLE_COUNT = 2048; // Squared -> 2048x2048 = 4194304 particles
 export const TEXTURE_SIZE = 2048;
+export const DEFAULT_CAMERA_DISTANCE = 28;
+export const DEFAULT_CAMERA_SCROLL_STEPS = 10;
+// OrbitControls uses 0.95^zoomSpeed per wheel tick; invert to mimic scroll-down zoom-out.
+export const DEFAULT_CAMERA_Z =
+  DEFAULT_CAMERA_DISTANCE * Math.pow(1 / 0.95, DEFAULT_CAMERA_SCROLL_STEPS);
 
 export const PROJECTS: Project[] = [
   {
