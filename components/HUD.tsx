@@ -8,7 +8,8 @@ const HUD: React.FC = () => {
     setActiveProject, 
     activeProjectId, 
     isLowPower, 
-    toggleLowPower 
+    toggleLowPower,
+    openResume
   } = useStore();
 
   if (activeProjectId) return null; // Hide HUD when viewing project
@@ -26,9 +27,12 @@ const HUD: React.FC = () => {
           <button onClick={toggleLowPower} className={`text-xs font-mono border px-3 py-1 bg-black hover:bg-white hover:text-black transition ${isLowPower ? 'bg-white text-black' : 'border-gray-700 text-gray-400'}`}>
             {isLowPower ? 'LOW POWER: ON' : 'HIGH PERF'}
           </button>
-          <a href="#" className="text-xs font-mono border border-gray-700 text-gray-400 px-3 py-1 bg-black hover:bg-white hover:text-black transition">
+          <button
+            onClick={openResume}
+            className="text-xs font-mono border border-gray-700 text-gray-400 px-3 py-1 bg-black hover:bg-white hover:text-black transition"
+          >
             DOWNLOAD CV
-          </a>
+          </button>
           <a href="#" className="text-xs font-mono border border-gray-700 text-gray-400 px-3 py-1 bg-black hover:bg-white hover:text-black transition">
             CONTACT
           </a>

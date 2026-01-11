@@ -12,6 +12,9 @@ interface AppState {
   setHoveredCoordinates: (x: number, y: number) => void;
   isLowPower: boolean;
   toggleLowPower: () => void;
+  isResumeOpen: boolean;
+  openResume: () => void;
+  closeResume: () => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -20,6 +23,7 @@ export const useStore = create<AppState>((set) => ({
   lastFreeCameraTarget: new THREE.Vector3(0, 0, DEFAULT_CAMERA_Z),
   hoveredCoordinates: { x: 0, y: 0 },
   isLowPower: false,
+  isResumeOpen: false,
   
   setActiveProject: (id) => set((state) => {
     if (id === null) {
@@ -56,4 +60,6 @@ export const useStore = create<AppState>((set) => ({
   setHoveredCoordinates: (x, y) => set({ hoveredCoordinates: { x, y } }),
   
   toggleLowPower: () => set((state) => ({ isLowPower: !state.isLowPower })),
+  openResume: () => set({ isResumeOpen: true }),
+  closeResume: () => set({ isResumeOpen: false }),
 }));

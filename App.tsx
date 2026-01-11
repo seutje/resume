@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import Experience from './components/Experience';
 import HUD from './components/HUD';
 import ProjectOverlay from './components/ProjectOverlay';
+import ResumeDialog from './components/ResumeDialog';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
       
       <HUD />
       <ProjectOverlay />
+      <ResumeDialog />
     </div>
   );
 };
