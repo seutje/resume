@@ -12,10 +12,8 @@ const HUD: React.FC = () => {
     openResume
   } = useStore();
 
-  if (activeProjectId) return null; // Hide HUD when viewing project
-
   return (
-    <div className="absolute inset-0 pointer-events-none select-none z-10 p-4 sm:p-6 flex flex-col justify-between">
+    <div className="absolute inset-0 pointer-events-none select-none z-30 p-4 sm:p-6 flex flex-col justify-between">
       {/* Top Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start">
         <div>
@@ -52,21 +50,23 @@ const HUD: React.FC = () => {
 
         {/* Quick Jump Dock */}
         <div className="pointer-events-auto bg-black/50 backdrop-blur-md border border-gray-800 rounded-full px-4 sm:px-6 py-2 sm:py-3 flex gap-4 sm:gap-6 max-w-full overflow-x-auto">
-           {PROJECTS.map((p) => (
+           {PROJECTS.map((p) => {
+             const isActive = activeProjectId === p.id;
+             return (
              <button
                key={p.id}
                onClick={() => setActiveProject(p.id)}
-               className="group flex flex-col items-center gap-1"
+               className={`group flex flex-col items-center gap-1 ${isActive ? 'opacity-100' : 'opacity-80 hover:opacity-100'}`}
              >
                 <div 
-                    className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 group-hover:scale-150"
-                    style={{ backgroundColor: p.color, boxShadow: `0 0 10px ${p.color}` }}
+                    className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${isActive ? 'scale-150 ring-2 ring-white' : 'group-hover:scale-150'}`}
+                    style={{ backgroundColor: p.color, boxShadow: `0 0 ${isActive ? '16px' : '10px'} ${p.color}` }}
                 />
-                <span className="text-[9px] sm:text-[10px] uppercase font-mono text-gray-400 group-hover:text-white transition-colors">
+                <span className={`text-[9px] sm:text-[10px] uppercase font-mono transition-colors ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'}`}>
                     {p.title}
                 </span>
              </button>
-           ))}
+           )})}
         </div>
         
         {/* Placeholder for balance */}
