@@ -40,7 +40,7 @@ const HUD: React.FC = () => {
       {/* Bottom Footer */}
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end">
         {/* Coordinates */}
-        <div className="font-mono text-[10px] sm:text-xs text-gray-500">
+        <div className="hidden sm:block font-mono text-[10px] sm:text-xs text-gray-500">
           <div className="flex gap-4">
             <span>LAT: {hoveredCoordinates.x.toFixed(4)}</span>
             <span>LON: {hoveredCoordinates.y.toFixed(4)}</span>
