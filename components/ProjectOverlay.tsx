@@ -17,7 +17,7 @@ const ProjectOverlay: React.FC = () => {
       />
 
       {/* Content Card */}
-      <div className="w-full md:w-[450px] h-[80vh] md:h-auto bg-black/80 backdrop-blur-xl border border-gray-800 p-5 sm:p-6 md:p-8 flex flex-col pointer-events-auto relative shadow-2xl animate-in slide-in-from-right duration-500">
+      <div className="w-full md:w-[450px] max-h-[80vh] md:max-h-none md:h-auto overflow-y-auto bg-black/80 backdrop-blur-xl border border-gray-800 p-5 sm:p-6 md:p-8 flex flex-col pointer-events-auto relative shadow-2xl animate-in slide-in-from-right duration-500">
         <button 
             onClick={() => setActiveProject(null)}
             className="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-500 hover:text-white font-mono text-xl"
