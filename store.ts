@@ -15,6 +15,8 @@ interface AppState {
   isResumeOpen: boolean;
   openResume: () => void;
   closeResume: () => void;
+  autoRotateEnabled: boolean;
+  setAutoRotateEnabled: (enabled: boolean) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -24,6 +26,7 @@ export const useStore = create<AppState>((set) => ({
   hoveredCoordinates: { x: 0, y: 0 },
   isLowPower: false,
   isResumeOpen: false,
+  autoRotateEnabled: false,
   
   setActiveProject: (id) => set((state) => {
     if (id === null) {
@@ -43,7 +46,8 @@ export const useStore = create<AppState>((set) => ({
           project.position[0], 
           project.position[1], 
           project.position[2] + 8
-        ) 
+        ),
+        autoRotateEnabled: true
       };
     }
     return state;
@@ -62,4 +66,5 @@ export const useStore = create<AppState>((set) => ({
   toggleLowPower: () => set((state) => ({ isLowPower: !state.isLowPower })),
   openResume: () => set({ isResumeOpen: true }),
   closeResume: () => set({ isResumeOpen: false }),
+  setAutoRotateEnabled: (enabled) => set({ autoRotateEnabled: enabled }),
 }));

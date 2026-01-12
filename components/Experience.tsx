@@ -17,10 +17,15 @@ interface CameraRigProps {
 }
 
 const CameraRig: React.FC<CameraRigProps> = ({ controlsRef, isUserInteracting }) => {
-  const { cameraTarget, activeProjectId, setHoveredCoordinates } = useStore();
+  const { cameraTarget, activeProjectId, setHoveredCoordinates, autoRotateEnabled } = useStore();
   const focusTarget = useRef(new THREE.Vector3());
   const defaultTarget = useRef(new THREE.Vector3(0, 0, 0));
   const cameraFollowTarget = useRef(new THREE.Vector3());
+  const autoRotateAngle = useRef(0);
+  const autoRotateRadius = useRef(DEFAULT_CAMERA_Z);
+  const autoRotateHeightOffset = useRef(0);
+  const lastAutoRotateEnabled = useRef(false);
+  const lastActiveProjectId = useRef<string | null>(null);
 
   // Retrieve active project data for 3D lookAt target
   const activeProjectIndex = useMemo(
@@ -34,34 +39,59 @@ const CameraRig: React.FC<CameraRigProps> = ({ controlsRef, isUserInteracting })
     const driftedActivePosition = hasActiveProject
       ? getProjectDriftedPosition(PROJECTS[activeProjectIndex].position, t, activeProjectIndex)
       : null;
-
-    // Smooth camera movement to target
-    if (!isUserInteracting.current) {
-      const target = hasActiveProject
-        ? cameraFollowTarget.current.set(
-            driftedActivePosition![0],
-            driftedActivePosition![1],
-            driftedActivePosition![2] + 8
-          )
-        : cameraTarget;
-      easing.damp3(state.camera.position, target, 0.4, delta);
-    }
     
     // Update orbit target for rotations around the right focus point.
     const controls = controlsRef.current;
+    if (hasActiveProject) {
+      focusTarget.current.set(
+        driftedActivePosition![0],
+        driftedActivePosition![1],
+        driftedActivePosition![2]
+      );
+    } else {
+      focusTarget.current.copy(defaultTarget.current);
+    }
     if (controls) {
-      if (hasActiveProject) {
-        focusTarget.current.set(
-          driftedActivePosition![0],
-          driftedActivePosition![1],
-          driftedActivePosition![2]
-        );
-      } else {
-        focusTarget.current.copy(defaultTarget.current);
-      }
       easing.damp3(controls.target, focusTarget.current, 0.4, delta);
+    }
+
+    const autoRotateJustEnabled = autoRotateEnabled && (!lastAutoRotateEnabled.current || lastActiveProjectId.current !== activeProjectId);
+    if (autoRotateJustEnabled) {
+      const offset = state.camera.position.clone().sub(focusTarget.current);
+      autoRotateRadius.current = hasActiveProject ? 8 : Math.max(offset.length(), DEFAULT_CAMERA_Z);
+      autoRotateAngle.current = Math.atan2(offset.x, offset.z);
+      autoRotateHeightOffset.current = offset.y;
+    }
+
+    // Smooth camera movement to target or orbit when auto-rotating.
+    if (!isUserInteracting.current) {
+      if (autoRotateEnabled) {
+        autoRotateAngle.current += delta * 0.15;
+        const radius = hasActiveProject ? 8 : autoRotateRadius.current;
+        const desired = cameraFollowTarget.current.set(
+          focusTarget.current.x + Math.sin(autoRotateAngle.current) * radius,
+          focusTarget.current.y + autoRotateHeightOffset.current,
+          focusTarget.current.z + Math.cos(autoRotateAngle.current) * radius
+        );
+        easing.damp3(state.camera.position, desired, 0.4, delta);
+      } else {
+        const target = hasActiveProject
+          ? cameraFollowTarget.current.set(
+              driftedActivePosition![0],
+              driftedActivePosition![1],
+              driftedActivePosition![2] + 8
+            )
+          : cameraTarget;
+        easing.damp3(state.camera.position, target, 0.4, delta);
+      }
+    }
+
+    if (controls) {
       controls.update();
     }
+
+    lastAutoRotateEnabled.current = autoRotateEnabled;
+    lastActiveProjectId.current = activeProjectId;
 
     // Update coordinates display (approximate)
     setHoveredCoordinates(state.camera.position.x, state.camera.position.y);
@@ -165,6 +195,7 @@ const SubtleBloom = () => {
 const Experience: React.FC = () => {
   const isLowPower = useStore(state => state.isLowPower);
   const setCameraTarget = useStore(state => state.setCameraTarget);
+  const setAutoRotateEnabled = useStore(state => state.setAutoRotateEnabled);
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const isUserInteracting = useRef(false);
 
@@ -191,6 +222,7 @@ const Experience: React.FC = () => {
               dampingFactor={0.1}
               onStart={() => {
                 isUserInteracting.current = true;
+                setAutoRotateEnabled(false);
               }}
               onEnd={() => {
                 isUserInteracting.current = false;

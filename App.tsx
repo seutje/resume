@@ -4,9 +4,11 @@ import HUD from './components/HUD';
 import ProjectOverlay from './components/ProjectOverlay';
 import ResumeDialog from './components/ResumeDialog';
 import WelcomeScreen from './components/WelcomeScreen';
+import { useStore } from './store';
 
 const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState(true);
+  const setAutoRotateEnabled = useStore(state => state.setAutoRotateEnabled);
 
   const handleStart = useCallback(async () => {
     const root = document.documentElement;
@@ -18,7 +20,8 @@ const App: React.FC = () => {
       }
     }
     setShowWelcome(false);
-  }, []);
+    setAutoRotateEnabled(true);
+  }, [setAutoRotateEnabled]);
 
   return (
     <div className="relative w-full h-screen bg-[#050505] overflow-hidden">
