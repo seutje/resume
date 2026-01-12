@@ -17,10 +17,10 @@ const ProjectOverlay: React.FC = () => {
       />
 
       {/* Content Card */}
-      <div className="w-full md:w-[450px] h-[80vh] md:h-auto bg-black/80 backdrop-blur-xl border border-gray-800 p-8 flex flex-col pointer-events-auto relative shadow-2xl animate-in slide-in-from-right duration-500">
+      <div className="w-full md:w-[450px] h-[80vh] md:h-auto bg-black/80 backdrop-blur-xl border border-gray-800 p-5 sm:p-6 md:p-8 flex flex-col pointer-events-auto relative shadow-2xl animate-in slide-in-from-right duration-500">
         <button 
             onClick={() => setActiveProject(null)}
-            className="absolute top-6 right-6 text-gray-500 hover:text-white font-mono text-xl"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-500 hover:text-white font-mono text-xl"
         >
             ×
         </button>
@@ -34,13 +34,13 @@ const ProjectOverlay: React.FC = () => {
             </span>
         </div>
 
-        <h2 className="text-4xl font-bold text-white mb-6 font-mono tracking-tight">{project.title}</h2>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6 font-mono tracking-tight">{project.title}</h2>
         
-        <p className="text-gray-300 leading-relaxed mb-8 text-sm md:text-base border-l-2 border-gray-800 pl-4">
+        <p className="text-gray-300 leading-relaxed mb-6 sm:mb-8 text-sm md:text-base border-l-2 border-gray-800 pl-4">
             {project.description}
         </p>
 
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
             <h3 className="text-xs font-mono text-gray-500 uppercase mb-3">Tech Stack</h3>
             <div className="flex flex-wrap gap-2">
                 {project.techStack.map(tech => (
