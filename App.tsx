@@ -9,6 +9,7 @@ import { useStore } from './store';
 const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const setAutoRotateEnabled = useStore(state => state.setAutoRotateEnabled);
+  const isAudioMuted = useStore(state => state.isAudioMuted);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -23,6 +24,19 @@ const App: React.FC = () => {
     audioRef.current.volume = 0.7;
   }, []);
 
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || showWelcome) return;
+
+    if (isAudioMuted) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {
+        // Ignore playback errors; user gesture may be required.
+      });
+    }
+  }, [isAudioMuted, showWelcome]);
+
   const handleStart = useCallback(async () => {
     const root = document.documentElement;
     if (!document.fullscreenElement && root.requestFullscreen) {
@@ -34,7 +48,7 @@ const App: React.FC = () => {
     }
 
     const audio = audioRef.current;
-    if (audio) {
+    if (audio && !isAudioMuted) {
       try {
         await audio.play();
       } catch {
@@ -44,7 +58,7 @@ const App: React.FC = () => {
 
     setShowWelcome(false);
     setAutoRotateEnabled(true);
-  }, [setAutoRotateEnabled]);
+  }, [isAudioMuted, setAutoRotateEnabled]);
 
   return (
     <div className="relative w-full h-screen bg-[#050505] overflow-hidden">

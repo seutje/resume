@@ -7,7 +7,9 @@ const HUD: React.FC = () => {
     hoveredCoordinates, 
     setActiveProject, 
     activeProjectId, 
-    openResume
+    openResume,
+    isAudioMuted,
+    toggleAudioMuted
   } = useStore();
 
   return (
@@ -25,6 +27,13 @@ const HUD: React.FC = () => {
             className="text-[10px] sm:text-xs font-mono border border-gray-700 text-gray-400 px-2 sm:px-3 py-1 bg-black hover:bg-white hover:text-black transition"
           >
             VIEW CV
+          </button>
+          <button
+            onClick={toggleAudioMuted}
+            className="text-[10px] sm:text-xs font-mono border border-gray-700 text-gray-400 px-2 sm:px-3 py-1 bg-black hover:bg-white hover:text-black transition"
+            aria-label={isAudioMuted ? 'Unmute audio' : 'Mute audio'}
+          >
+            {isAudioMuted ? 'UNMUTE' : 'MUTE'}
           </button>
         </div>
       </div>

@@ -15,6 +15,8 @@ interface AppState {
   isResumeOpen: boolean;
   openResume: () => void;
   closeResume: () => void;
+  isAudioMuted: boolean;
+  toggleAudioMuted: () => void;
   autoRotateEnabled: boolean;
   setAutoRotateEnabled: (enabled: boolean) => void;
 }
@@ -26,6 +28,7 @@ export const useStore = create<AppState>((set) => ({
   hoveredCoordinates: { x: 0, y: 0 },
   isLowPower: false,
   isResumeOpen: false,
+  isAudioMuted: false,
   autoRotateEnabled: false,
   
   setActiveProject: (id) => set((state) => {
@@ -66,5 +69,6 @@ export const useStore = create<AppState>((set) => ({
   toggleLowPower: () => set((state) => ({ isLowPower: !state.isLowPower })),
   openResume: () => set({ isResumeOpen: true }),
   closeResume: () => set({ isResumeOpen: false }),
+  toggleAudioMuted: () => set((state) => ({ isAudioMuted: !state.isAudioMuted })),
   setAutoRotateEnabled: (enabled) => set({ autoRotateEnabled: enabled }),
 }));
