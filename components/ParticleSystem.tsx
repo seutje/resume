@@ -30,8 +30,11 @@ const ParticleSystem: React.FC = () => {
   const linesRef = useRef<THREE.LineSegments>(null);
   const trailRef = useRef<THREE.Points>(null);
   const mouseTrailRef = useRef(new THREE.Vector3());
+  const trailHeadRef = useRef(new THREE.Vector3());
+  const trailCarryRef = useRef(0);
   const activeProjectId = useStore(state => state.activeProjectId);
   const trailLength = 64;
+  const trailStep = 0.05;
 
   // 1. FBOs (Ping-Pong Buffers)
   const options = {
@@ -223,18 +226,42 @@ const ParticleSystem: React.FC = () => {
     return { geometry, positions, positionAttr };
   }, [trailLength]);
 
+  const trailTexture = useMemo(() => {
+    const size = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    const center = size / 2;
+    const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(center, center, center, 0, Math.PI * 2);
+    ctx.fill();
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+    return texture;
+  }, []);
+
   const trailMaterial = useMemo(() => {
     return new THREE.PointsMaterial({
       size: 0.5,
       vertexColors: true,
       transparent: true,
       opacity: 0.9,
+      map: trailTexture ?? undefined,
+      alphaTest: 0.05,
       depthWrite: false,
       depthTest: false,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true,
     });
-  }, []);
+  }, [trailTexture]);
 
   useFrame((state) => {
     const { clock } = state;
@@ -292,16 +319,34 @@ const ParticleSystem: React.FC = () => {
 
     if (trailRef.current) {
       const positions = trailData.positions;
-      for (let i = trailLength - 1; i > 0; i--) {
-        const i3 = i * 3;
-        const prev = (i - 1) * 3;
-        positions[i3] = positions[prev];
-        positions[i3 + 1] = positions[prev + 1];
-        positions[i3 + 2] = positions[prev + 2];
+      const head = trailHeadRef.current;
+      if (head.lengthSq() === 0) {
+        head.copy(mousePos);
       }
-      positions[0] = mousePos.x;
-      positions[1] = mousePos.y;
-      positions[2] = mousePos.z + 0.2;
+
+      const target = mousePos.clone();
+      target.z += 0.2;
+      const dist = head.distanceTo(target);
+      let steps = Math.floor((dist + trailCarryRef.current) / trailStep);
+      trailCarryRef.current = Math.max(0, dist + trailCarryRef.current - steps * trailStep);
+      steps = Math.max(1, Math.min(steps, trailLength - 1));
+
+      for (let s = 0; s < steps; s++) {
+        const alpha = (s + 1) / steps;
+        const sample = head.clone().lerp(target, alpha);
+        for (let i = trailLength - 1; i > 0; i--) {
+          const i3 = i * 3;
+          const prev = (i - 1) * 3;
+          positions[i3] = positions[prev];
+          positions[i3 + 1] = positions[prev + 1];
+          positions[i3 + 2] = positions[prev + 2];
+        }
+        positions[0] = sample.x;
+        positions[1] = sample.y;
+        positions[2] = sample.z;
+      }
+
+      head.copy(target);
       trailData.positionAttr.needsUpdate = true;
     }
 
