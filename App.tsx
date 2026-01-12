@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Experience from './components/Experience';
 import HUD from './components/HUD';
 import ProjectOverlay from './components/ProjectOverlay';
@@ -9,6 +9,19 @@ import { useStore } from './store';
 const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const setAutoRotateEnabled = useStore(state => state.setAutoRotateEnabled);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      const audio = new Audio('The Latent Atlas.mp3');
+      audio.loop = true;
+      audio.volume = 0.7;
+      audioRef.current = audio;
+      return;
+    }
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.7;
+  }, []);
 
   const handleStart = useCallback(async () => {
     const root = document.documentElement;
@@ -19,6 +32,16 @@ const App: React.FC = () => {
         // Ignore fullscreen errors; keep the experience accessible.
       }
     }
+
+    const audio = audioRef.current;
+    if (audio) {
+      try {
+        await audio.play();
+      } catch {
+        // Ignore autoplay errors; user may need another gesture.
+      }
+    }
+
     setShowWelcome(false);
     setAutoRotateEnabled(true);
   }, [setAutoRotateEnabled]);
