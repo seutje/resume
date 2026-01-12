@@ -7,8 +7,6 @@ const HUD: React.FC = () => {
     hoveredCoordinates, 
     setActiveProject, 
     activeProjectId, 
-    isLowPower, 
-    toggleLowPower,
     openResume
   } = useStore();
 
@@ -22,9 +20,6 @@ const HUD: React.FC = () => {
         </div>
         
         <div className="flex flex-wrap justify-end gap-2 sm:gap-4 pointer-events-auto">
-          <button onClick={toggleLowPower} className={`text-[10px] sm:text-xs font-mono border px-2 sm:px-3 py-1 bg-black hover:bg-white hover:text-black transition ${isLowPower ? 'bg-white text-black' : 'border-gray-700 text-gray-400'}`}>
-            {isLowPower ? 'LOW POWER: ON' : 'HIGH PERF'}
-          </button>
           <button
             onClick={openResume}
             className="text-[10px] sm:text-xs font-mono border border-gray-700 text-gray-400 px-2 sm:px-3 py-1 bg-black hover:bg-white hover:text-black transition"
