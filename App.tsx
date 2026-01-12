@@ -16,12 +16,12 @@ const App: React.FC = () => {
     if (!audioRef.current) {
       const audio = new Audio('The Latent Atlas.mp3');
       audio.loop = true;
-      audio.volume = 0.5;
+      audio.volume = 0.25;
       audioRef.current = audio;
       return;
     }
     audioRef.current.loop = true;
-    audioRef.current.volume = 0.7;
+    audioRef.current.volume = 0.25;
   }, []);
 
   useEffect(() => {
