@@ -28,7 +28,10 @@ const ParticleSystem: React.FC = () => {
   const { gl, camera, pointer } = useThree();
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
+  const trailRef = useRef<THREE.Points>(null);
+  const mouseTrailRef = useRef(new THREE.Vector3());
   const activeProjectId = useStore(state => state.activeProjectId);
+  const trailLength = 64;
 
   // 1. FBOs (Ping-Pong Buffers)
   const options = {
@@ -199,6 +202,40 @@ const ParticleSystem: React.FC = () => {
     return geo;
   }, []);
 
+  const trailData = useMemo(() => {
+    const positions = new Float32Array(trailLength * 3);
+    const colors = new Float32Array(trailLength * 3);
+    const color = new THREE.Color();
+    for (let i = 0; i < trailLength; i++) {
+      const t = i / Math.max(1, trailLength - 1);
+      const fade = Math.pow(1 - t, 1.6);
+      color.setHSL(t, 1, 0.6);
+      const i3 = i * 3;
+      colors[i3] = color.r * fade;
+      colors[i3 + 1] = color.g * fade;
+      colors[i3 + 2] = color.b * fade;
+    }
+    const geometry = new THREE.BufferGeometry();
+    const positionAttr = new THREE.BufferAttribute(positions, 3);
+    positionAttr.setUsage(THREE.DynamicDrawUsage);
+    geometry.setAttribute('position', positionAttr);
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    return { geometry, positions, positionAttr };
+  }, [trailLength]);
+
+  const trailMaterial = useMemo(() => {
+    return new THREE.PointsMaterial({
+      size: 0.5,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      depthTest: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+    });
+  }, []);
+
   useFrame((state) => {
     const { clock } = state;
     const { current, next } = fboRef.current;
@@ -226,7 +263,8 @@ const ParticleSystem: React.FC = () => {
     const dir = vec.sub(camera.position).normalize();
     const distance = -camera.position.z / dir.z;
     const pos = camera.position.clone().add(dir.multiplyScalar(distance));
-    simMaterial.uniforms.uMouse.value.lerp(pos, 0.1);
+    const mousePos = mouseTrailRef.current.lerp(pos, 0.2);
+    simMaterial.uniforms.uMouse.value.lerp(mousePos, 0.1);
     
     simMaterial.uniforms.uActive.value = activeProjectId ? 1 : 0;
 
@@ -252,6 +290,21 @@ const ParticleSystem: React.FC = () => {
         material.uniforms.uTarget3.value.set(...drift3);
     }
 
+    if (trailRef.current) {
+      const positions = trailData.positions;
+      for (let i = trailLength - 1; i > 0; i--) {
+        const i3 = i * 3;
+        const prev = (i - 1) * 3;
+        positions[i3] = positions[prev];
+        positions[i3 + 1] = positions[prev + 1];
+        positions[i3 + 2] = positions[prev + 2];
+      }
+      positions[0] = mousePos.x;
+      positions[1] = mousePos.y;
+      positions[2] = mousePos.z + 0.2;
+      trailData.positionAttr.needsUpdate = true;
+    }
+
     // D. Swap
     simMaterial.uniforms.positions.value = next.texture;
     fboRef.current.current = next;
@@ -270,6 +323,12 @@ const ParticleSystem: React.FC = () => {
         ref={linesRef}
         geometry={connectionsGeometry}
         material={connectionMaterial}
+        frustumCulled={false}
+      />
+      <points
+        ref={trailRef}
+        geometry={trailData.geometry}
+        material={trailMaterial}
         frustumCulled={false}
       />
     </>
