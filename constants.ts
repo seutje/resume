@@ -28,10 +28,11 @@ export const PROJECTS: Project[] = [
   {
     id: "noise-to-signal",
     title: "Noise to Signal",
-    position: [-4, 7, -2], // Left and closer than LatentNoise
+    position: [-8, 6, 1], // Twice as far from LatentNoise
     color: "#00e5ff", // Cyan
     description: "Python-based offline rendering toolkit that turns a predefined album of WAV/MP3 tracks into prerendered MP4/WebM videos by analyzing audio, driving trajectories through a compact latent VAE trained on abstract imagery, decoding frames in batches, and streaming them to FFmpeg for encoding, with GPU acceleration optional but not required.",
-    techStack: ["Python 3.10+", "PyTorch", "diffusers", "transformers", "CUDA 12.x (optional)"]
+    techStack: ["Python 3.10+", "CUDA 12.x", "PyTorch", "diffusers", "transformers"],
+    link: "https://github.com/seutje/noise-to-signal"
   },
   {
     id: "neuromorphs",
