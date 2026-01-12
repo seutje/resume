@@ -101,7 +101,7 @@ const ParticleSystem: React.FC = () => {
       fragmentShader: particleFragmentShader,
       uniforms: {
         uPositions: { value: initialTexture }, 
-        uPointSize: { value: 0.5 },
+        uPointSize: { value: 1 },
         uTarget1: { value: new THREE.Vector3(...(t1?.position || [0,0,0])) },
         uColor1: { value: new THREE.Color(t1?.color) },
         uTarget2: { value: new THREE.Vector3(...(t2?.position || [0,0,0])) },
