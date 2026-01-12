@@ -23,7 +23,7 @@ export const PROJECTS: Project[] = [
     color: "#ff0055", // Neon Pink
     description: "Browser-based audio‑reactive physics visualizer built with vanilla HTML/CSS/JS that uses the Web Audio API to extract real‑time spectral features, feeds them through compact neural‑network models, and maps the outputs into a particle‑physics simulation rendered on canvas with adaptive performance controls and photosensitivity‑safe clamps, wrapped in a full UI/UX layer (playlist, HUD, keyboard controls, persistence) and supported by linting/testing and model‑generation tooling—demonstrating end‑to‑end front‑end engineering, signal processing, and interactive graphics design in a single ES‑module app.",
     techStack: ["JavaScript", "WebAudio API", "GLSL", "ffmpeg"],
-    link: "https://seutje.github.io/latent-noise"
+    link: "https://seutje.github.io/LatentNoise"
   },
   {
     id: "noise-to-signal",
