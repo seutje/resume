@@ -3,6 +3,7 @@ uniform sampler2D uPositions;
 uniform vec3 uTarget1;
 uniform vec3 uTarget2;
 uniform vec3 uTarget3;
+uniform vec3 uTarget4;
 uniform float uConnectionRadius;
 
 attribute vec2 aOther;
@@ -13,7 +14,8 @@ float minTargetDistance(vec3 pos) {
     float d1 = distance(pos, uTarget1);
     float d2 = distance(pos, uTarget2);
     float d3 = distance(pos, uTarget3);
-    return min(d1, min(d2, d3));
+    float d4 = distance(pos, uTarget4);
+    return min(min(d1, d2), min(d3, d4));
 }
 
 void main() {

@@ -52,11 +52,13 @@ const ParticleSystem: React.FC = () => {
   const simMaterial = useMemo(() => {
     const mat = SimulationMaterial.clone();
     const t1 = PROJECTS.find(p => p.id === 'latent-noise')?.position || [0,0,0];
+    const t4 = PROJECTS.find(p => p.id === 'noise-to-signal')?.position || [0,0,0];
     const t2 = PROJECTS.find(p => p.id === 'neuromorphs')?.position || [0,0,0];
     const t3 = PROJECTS.find(p => p.id === 'wow-legends')?.position || [0,0,0];
     mat.uniforms.uTarget1.value.set(...t1);
     mat.uniforms.uTarget2.value.set(...t2);
     mat.uniforms.uTarget3.value.set(...t3);
+    mat.uniforms.uTarget4.value.set(...t4);
     return mat;
   }, []);
 
@@ -84,6 +86,7 @@ const ParticleSystem: React.FC = () => {
   // 4. Render Material
   const renderMaterial = useMemo(() => {
     const t1 = PROJECTS.find(p => p.id === 'latent-noise');
+    const t4 = PROJECTS.find(p => p.id === 'noise-to-signal');
     const t2 = PROJECTS.find(p => p.id === 'neuromorphs');
     const t3 = PROJECTS.find(p => p.id === 'wow-legends');
 
@@ -99,6 +102,8 @@ const ParticleSystem: React.FC = () => {
         uColor2: { value: new THREE.Color(t2?.color) },
         uTarget3: { value: new THREE.Vector3(...(t3?.position || [0,0,0])) },
         uColor3: { value: new THREE.Color(t3?.color) },
+        uTarget4: { value: new THREE.Vector3(...(t4?.position || [0,0,0])) },
+        uColor4: { value: new THREE.Color(t4?.color) },
       },
       transparent: true,
       depthWrite: false,
@@ -108,6 +113,7 @@ const ParticleSystem: React.FC = () => {
 
   const connectionMaterial = useMemo(() => {
     const t1 = PROJECTS.find(p => p.id === 'latent-noise');
+    const t4 = PROJECTS.find(p => p.id === 'noise-to-signal');
     const t2 = PROJECTS.find(p => p.id === 'neuromorphs');
     const t3 = PROJECTS.find(p => p.id === 'wow-legends');
 
@@ -121,6 +127,7 @@ const ParticleSystem: React.FC = () => {
         uTarget1: { value: new THREE.Vector3(...(t1?.position || [0,0,0])) },
         uTarget2: { value: new THREE.Vector3(...(t2?.position || [0,0,0])) },
         uTarget3: { value: new THREE.Vector3(...(t3?.position || [0,0,0])) },
+        uTarget4: { value: new THREE.Vector3(...(t4?.position || [0,0,0])) },
         uConnectionRadius: { value: CONNECTION_RADIUS },
       },
       transparent: true,
@@ -196,15 +203,22 @@ const ParticleSystem: React.FC = () => {
     const { clock } = state;
     const { current, next } = fboRef.current;
     const t = clock.elapsedTime;
-    const drift1 = getProjectDriftedPosition(PROJECTS[0].position, t, 0);
-    const drift2 = getProjectDriftedPosition(PROJECTS[1].position, t, 1);
-    const drift3 = getProjectDriftedPosition(PROJECTS[2].position, t, 2);
+    const driftedById = (id: string) => {
+      const index = PROJECTS.findIndex(p => p.id === id);
+      if (index === -1) return [0, 0, 0] as [number, number, number];
+      return getProjectDriftedPosition(PROJECTS[index].position, t, index);
+    };
+    const drift1 = driftedById('latent-noise');
+    const drift2 = driftedById('neuromorphs');
+    const drift3 = driftedById('wow-legends');
+    const drift4 = driftedById('noise-to-signal');
     
     // A. Update Sim Uniforms
     simMaterial.uniforms.uTime.value = t;
     simMaterial.uniforms.uTarget1.value.set(...drift1);
     simMaterial.uniforms.uTarget2.value.set(...drift2);
     simMaterial.uniforms.uTarget3.value.set(...drift3);
+    simMaterial.uniforms.uTarget4.value.set(...drift4);
     
     // Project mouse to a plane (Z=0 is the default reference plane)
     const vec = new THREE.Vector3(pointer.x, pointer.y, 0.5);

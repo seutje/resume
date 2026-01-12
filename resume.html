@@ -427,6 +427,12 @@ h1{
 					<p><strong>Engineering Feat:</strong> Achieved stable 60fps performance with up to 20,000 autonomous agents by offloading physics and neural inference to GPU shaders and Web Workers.</p>
 				</li>
 				<li>
+					<strong>Noise to Signal</strong> &mdash; Offline Audio-to-Video Latent Renderer.
+					<p><strong>Concept:</strong> A Python-based offline rendering toolkit that turns a predefined album of WAV/MP3 tracks into prerendered MP4/WebM videos by analyzing audio, driving trajectories through a compact latent VAE trained on abstract imagery, decoding frames in batches, and streaming them to FFmpeg for encoding, with GPU acceleration optional but not required.</p>
+					<p><strong>Tech Stack:</strong> Python 3.10+, PyTorch, diffusers, transformers, CUDA 12.x (optional).</p>
+					<p><strong>Engineering Feat:</strong> Built a deterministic batch renderer that streams frames directly into FFmpeg, avoiding intermediate disk I/O while keeping GPU acceleration optional.</p>
+				</li>
+				<li>
 					<strong>wow-legends</strong> &mdash; AI-Driven Trading Card Game.
 					<p><strong>Concept:</strong> A full-featured Hearthstone clone featuring an AI opponent capable of strategic reasoning in an imperfect information game.</p>
 					<p><strong>Tech Stack:</strong> Reinforcement Learning, Monte Carlo Tree Search (MCTS), Neural Networks, Generative Assets.</p>

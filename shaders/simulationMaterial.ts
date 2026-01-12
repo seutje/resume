@@ -16,6 +16,7 @@ uniform vec3 uMouse; // Mouse position in world space projected to z=0 plan roug
 uniform vec3 uTarget1;
 uniform vec3 uTarget2;
 uniform vec3 uTarget3;
+uniform vec3 uTarget4;
 uniform float uActive; // 0 = none, 1 = attractor active
 
 varying vec2 vUv;
@@ -104,6 +105,7 @@ void main() {
     float d1 = distance(pos, uTarget1);
     float d2 = distance(pos, uTarget2);
     float d3 = distance(pos, uTarget3);
+    float d4 = distance(pos, uTarget4);
 
     // Forces
     vec3 force = vec3(0.0);
@@ -132,6 +134,14 @@ void main() {
         vec3 dir = normalize(uTarget3 - pos);
         force += dir * 0.06;
         velocity *= 0.5; // Slow down
+    }
+
+    // Attractor 4: Noise to Signal (Focused flow)
+    if (d4 < 8.0) {
+        vec3 dir = normalize(uTarget4 - pos);
+        force += dir * 0.045;
+        vec3 swirl = cross(dir, vec3(0.0, 1.0, 0.0)) * 0.02;
+        force += swirl;
     }
 
     // Mouse Repulsion
@@ -163,6 +173,7 @@ export const SimulationMaterial = new THREE.ShaderMaterial({
     uTarget1: { value: new THREE.Vector3(0, 0, 0) },
     uTarget2: { value: new THREE.Vector3(0, 0, 0) },
     uTarget3: { value: new THREE.Vector3(0, 0, 0) },
+    uTarget4: { value: new THREE.Vector3(0, 0, 0) },
     uActive: { value: 0 }
   },
   vertexShader: simulationVertexShader,
