@@ -13,8 +13,8 @@ const HUD: React.FC = () => {
   return (
     <div className="absolute inset-0 pointer-events-none select-none z-30 p-4 sm:p-6 flex flex-col justify-between">
       {/* Top Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start">
-        <div>
+      <div className="flex flex-row flex-wrap gap-3 justify-between items-start">
+        <div className="flex-1 min-w-[180px]">
           <h1 className="text-lg sm:text-xl font-bold font-mono tracking-tighter text-white">THE LATENT ATLAS</h1>
           <p className="text-[10px] sm:text-xs text-gray-500 font-mono mt-1">GPGPU NAVIGATION SYSTEM v1.0</p>
         </div>
