@@ -32,7 +32,7 @@ export const PROJECTS: Project[] = [
     color: "#00e5ff", // Cyan
     description: "Python-based offline rendering toolkit that turns a predefined album of WAV/MP3 tracks into prerendered MP4/WebM videos by analyzing audio, driving trajectories through a compact latent VAE trained on abstract imagery, decoding frames in batches, and streaming them to FFmpeg for encoding, with GPU acceleration optional but not required.",
     techStack: ["Python 3.10+", "CUDA 12.x", "PyTorch", "diffusers", "transformers"],
-    link: "https://github.com/seutje/noise-to-signal"
+    link: "https://www.youtube.com/watch?v=S0kGKfvWhrM"
   },
   {
     id: "neuromorphs",
