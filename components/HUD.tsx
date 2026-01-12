@@ -24,11 +24,8 @@ const HUD: React.FC = () => {
             onClick={openResume}
             className="text-[10px] sm:text-xs font-mono border border-gray-700 text-gray-400 px-2 sm:px-3 py-1 bg-black hover:bg-white hover:text-black transition"
           >
-            RESUME
+            VIEW CV
           </button>
-          <a href="#" className="text-[10px] sm:text-xs font-mono border border-gray-700 text-gray-400 px-2 sm:px-3 py-1 bg-black hover:bg-white hover:text-black transition">
-            CONTACT
-          </a>
         </div>
       </div>
 
