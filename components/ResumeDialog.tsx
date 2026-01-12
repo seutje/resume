@@ -22,7 +22,7 @@ const ResumeDialog: React.FC = () => {
         </button>
         <iframe
           title="Resume"
-          src="/resume/resume.html"
+          src={`${import.meta.env.BASE_URL}resume.html`}
           className="w-full h-full border-0"
         />
       </div>
